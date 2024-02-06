@@ -19,8 +19,8 @@ const server = http.createServer(app);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// Enable CORS for HTTP requests
-app.use(cors());
+// // Enable CORS for HTTP requests
+// app.use(cors());
 
 // Add headers for HTTP CORS
 app.use((req, res, next) => {
