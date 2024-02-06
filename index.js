@@ -1,10 +1,11 @@
+// app.js
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const https = require("https"); // Change http to https
-const fs = require("fs"); // Required for HTTPS
-const { initSocket } = require("./socket");
+const http = require("http");
+const { initSocket } = require("./socket"); // Import the initSocket function
 
 dotenv.config();
 const { connectDB } = require("./dbConfig/db");
@@ -13,26 +14,26 @@ const userRouter = require("./routes/user");
 const authRouter = require("./routes/authRouter");
 
 const app = express();
-
-// // Load HTTPS key and certificate
-// const httpsOptions = {
-//   key: fs.readFileSync("your_private_key.pem"),
-//   cert: fs.readFileSync("your_certificate.pem"),
-// };
-
-const server = https.createServer(app); // Use https.createServer
+const server = http.createServer(app);
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-const corsOptions = {
-  origin: process.env.URL,
-};
+// Enable CORS for HTTP requests
+app.use(cors());
 
-app.use(cors(corsOptions));
+// Add headers for HTTP CORS
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
 
 connectDB();
-initSocket(server);
+initSocket(server); // Initialize the io instance
 
 app.use("/feed", feedRoutes);
 app.use("/user", userRouter);
